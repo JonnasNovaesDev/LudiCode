@@ -88,6 +88,8 @@ class LudiCodeInterpreter:
             ">": operator.gt,
             "<=": operator.le,
             ">=": operator.ge,
+            "e": self._operator_e,
+            "ou": self._operator_ou,
         }
 
         # Cada tipo de comando da AST aponta para o metodo que executa esse comando.
@@ -213,8 +215,18 @@ class LudiCodeInterpreter:
             operador = self.operators.get(node[1])
             if operador is None:
                 raise SemanticError(f"Operador '{node[1]}' nao suportado.")
-            # Avalia os dois lados antes de aplicar o operador.
-            return operador(self.evaluate(node[2]), self.evaluate(node[3]))
+            esquerda = self.evaluate(node[2])
+            direita = self.evaluate(node[3])
+            try:
+                # Avalia os dois lados antes de aplicar o operador.
+                return operador(esquerda, direita)
+            except ZeroDivisionError as error:
+                raise SemanticError("Divisao por zero.") from error
+            except TypeError as error:
+                raise SemanticError(
+                    f"Tipos incompativeis para o operador '{node[1]}': "
+                    f"{type(esquerda).__name__} e {type(direita).__name__}."
+                ) from error
 
         if tipo == "chamada":
             return self.execute_call(node)
@@ -284,3 +296,9 @@ class LudiCodeInterpreter:
     def _call_mostrar(self, valor=None):
         self.output.append(valor)
         return valor
+
+    def _operator_e(self, esquerda, direita):
+        return bool(esquerda) and bool(direita)
+
+    def _operator_ou(self, esquerda, direita):
+        return bool(esquerda) or bool(direita)
