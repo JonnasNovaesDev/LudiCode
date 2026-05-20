@@ -1,0 +1,6 @@
+var x = 0
+
+enquanto (x < 3) {
+    mostrar(x)
+    x = x + 1
+}
