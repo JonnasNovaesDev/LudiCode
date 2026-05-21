@@ -1,4 +1,4 @@
-from sly import Parser
+from sly import Parser, _
 from lexer import LudiCodeLexer
 
 
@@ -6,6 +6,7 @@ class LudiCodeParser(Parser):
     tokens = LudiCodeLexer.tokens
 
     precedence = (
+        ('nonassoc', 'IGUAL', 'MENOR', 'MAIOR', 'MENOR_IGUAL', 'MAIOR_IGUAL'),
         ('left', '+', '-'),
         ('left', '*', '/'),
     )
@@ -40,7 +41,7 @@ class LudiCodeParser(Parser):
 
     @_('SE "(" expr ")" bloco SENAO bloco')
     def statement(self, p):
-        return ('se_senao', p.expr, p.bloco0, p.bloco1)
+        return ('se', p.expr, p.bloco0, p.bloco1)
 
     @_('ENQUANTO "(" expr ")" bloco')
     def statement(self, p):
