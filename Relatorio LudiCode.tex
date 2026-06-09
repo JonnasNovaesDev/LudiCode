@@ -1,0 +1,246 @@
+\documentclass[12pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[brazil]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{indentfirst}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\geometry{margin=2.5cm}
+\onehalfspacing
+
+\lstset{
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    frame=single,
+    numbers=left,
+    numberstyle=\tiny,
+    keywordstyle=\bfseries,
+    showstringspaces=false
+}
+
+\begin{document}
+
+\begin{titlepage}
+\begin{center}
+
+\textbf{CENTRO UNIVERSITÁRIO MAURÍCIO DE NASSAU}
+
+\vspace{2.5cm}
+
+\textbf{\Large DESENVOLVIMENTO DO COMPILADOR LUDICODE}
+
+\vspace{2cm}
+
+\textbf{Equipe:}
+
+\vspace{0.5cm}
+
+Abraão Araujo dos Santos\\
+Erick Alves de Souza\\
+Evandro França da Silva Filho\\
+Gabriel Marques Barbosa de Santana\\
+Gabriella Maria Nascimento da Silva\\
+Jonnas Kauan Pereira Novaes\\
+Mateus De Miranda Santos Moura\\
+Matheus Pinheiro da Cunha\\
+
+\vfill
+
+Maceió - AL\\
+2026
+
+\end{center}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+\section{Introdução}
+
+O projeto LudiCode foi desenvolvido com o objetivo de criar uma linguagem de programação voltada para o ensino de lógica computacional e robótica. A proposta da linguagem é utilizar comandos em português, facilitando o entendimento por parte de estudantes que estão tendo os primeiros contatos com programação.
+
+A implementação do projeto foi feita utilizando a linguagem Python e a biblioteca SLY, que auxilia na construção de analisadores léxicos e sintáticos. O sistema segue uma estrutura semelhante à utilizada em compiladores e interpretadores, passando por etapas como análise léxica, análise sintática, geração da árvore sintática abstrata e execução dos comandos.
+
+Dessa forma, o projeto permite relacionar os conceitos estudados na disciplina de Compiladores com uma aplicação prática, demonstrando como uma linguagem de programação pode ser definida, analisada e executada.
+
+\section{Estrutura da Linguagem}
+
+A linguagem LudiCode possui uma sintaxe simples e próxima da linguagem natural. Ela permite o uso de variáveis, estruturas condicionais, laços de repetição, operações matemáticas e comandos de exibição.
+
+Um exemplo de código escrito na linguagem é apresentado a seguir:
+
+\begin{lstlisting}
+var idade = 18
+
+se idade >= 18 {
+    mostrar("Maior de idade")
+}
+\end{lstlisting}
+
+Nesse exemplo, uma variável chamada \texttt{idade} é criada com o valor 18. Em seguida, é feita uma verificação condicional para exibir uma mensagem caso a condição seja verdadeira.
+
+A utilização de palavras em português torna a linguagem mais acessível, principalmente para estudantes iniciantes, pois reduz a dificuldade inicial causada por comandos em inglês.
+
+\section{Gramática da Linguagem}
+
+A gramática da linguagem define quais comandos são considerados válidos. No LudiCode, essas regras estão relacionadas à forma como variáveis, expressões, condições e blocos de comandos devem ser escritos.
+
+De forma simplificada, uma declaração de variável pode ser representada da seguinte maneira:
+
+\begin{lstlisting}
+var identificador = expressao
+\end{lstlisting}
+
+Uma estrutura condicional segue o formato:
+
+\begin{lstlisting}
+se condicao {
+    comandos
+}
+\end{lstlisting}
+
+E uma estrutura de repetição pode ser representada como:
+
+\begin{lstlisting}
+enquanto condicao {
+    comandos
+}
+\end{lstlisting}
+
+Essas regras são importantes porque permitem que o analisador sintático reconheça se o programa foi escrito corretamente. Caso o código não siga a estrutura esperada, o sistema pode identificar e informar o erro.
+
+\section{Desenvolvimento do Sistema}
+
+O sistema foi organizado em módulos, cada um responsável por uma etapa do processamento do código-fonte. Essa divisão facilita a compreensão do projeto e torna o código mais organizado.
+
+O fluxo geral do sistema pode ser representado da seguinte forma:
+
+\begin{center}
+Código Fonte $\rightarrow$ Lexer $\rightarrow$ Parser $\rightarrow$ AST $\rightarrow$ Interpretador
+\end{center}
+
+Primeiro, o código escrito pelo usuário é lido pelo analisador léxico. Depois, os tokens gerados são enviados para o analisador sintático. Em seguida, é construída uma Árvore Sintática Abstrata, que será utilizada pelo interpretador para executar o programa.
+
+\subsection{Arquivo main.py}
+
+O arquivo \texttt{main.py} é responsável por iniciar a execução do sistema. Ele realiza a leitura do código-fonte e aciona os demais componentes do compilador.
+
+De maneira geral, esse arquivo funciona como o ponto de entrada do projeto. Ele recebe o programa escrito na linguagem LudiCode, envia esse conteúdo para o lexer, depois para o parser e, por fim, executa o interpretador.
+
+Essa organização permite que as etapas do compilador sejam executadas em sequência, garantindo que o código passe por validações antes da execução.
+
+\subsection{Analisador Léxico}
+
+O analisador léxico foi implementado no arquivo \texttt{lexer.py}. Sua função é ler o código-fonte e identificar os elementos básicos da linguagem, chamados de tokens.
+
+Tokens são partes reconhecidas do código, como palavras reservadas, identificadores, números, operadores e símbolos. Por exemplo, na instrução:
+
+\begin{lstlisting}
+var idade = 18
+\end{lstlisting}
+
+o analisador identifica elementos como a palavra reservada \texttt{var}, o identificador \texttt{idade}, o operador de atribuição e o número \texttt{18}.
+
+Entre as principais palavras reservadas reconhecidas pela linguagem estão:
+
+\begin{itemize}
+    \item \texttt{var};
+    \item \texttt{se};
+    \item \texttt{senao};
+    \item \texttt{enquanto};
+    \item \texttt{mostrar};
+    \item \texttt{verdadeiro};
+    \item \texttt{falso}.
+\end{itemize}
+
+Essa etapa é fundamental, pois transforma o texto digitado pelo usuário em uma sequência de informações que pode ser processada pelas próximas fases.
+
+\subsection{Analisador Sintático}
+
+A análise sintática é realizada pelo arquivo \texttt{parse.py}. Essa etapa verifica se a sequência de tokens gerada pelo analisador léxico está de acordo com as regras da gramática da linguagem.
+
+Por exemplo, a instrução abaixo segue a estrutura correta da linguagem:
+
+\begin{lstlisting}
+var nome = "LudiCode"
+\end{lstlisting}
+
+Por outro lado, uma instrução com a ordem incorreta dos elementos pode gerar um erro sintático:
+
+\begin{lstlisting}
+var = nome "LudiCode"
+\end{lstlisting}
+
+Além de verificar a sintaxe, o parser também é responsável por construir a Árvore Sintática Abstrata, conhecida como AST.
+
+\subsection{Árvore Sintática Abstrata}
+
+A Árvore Sintática Abstrata, ou AST, é uma estrutura utilizada para representar o programa de forma organizada. Em vez de executar diretamente o texto escrito pelo usuário, o sistema cria uma representação interna mais fácil de processar.
+
+Por exemplo, uma declaração de variável pode ser representada internamente como uma estrutura contendo o tipo da instrução, o nome da variável e o valor atribuído.
+
+Essa representação facilita a execução do programa, pois o interpretador consegue percorrer a árvore e executar cada comando na ordem correta.
+
+\subsection{Interpretador}
+
+O interpretador foi implementado no arquivo \texttt{interpreter.py}. Ele é responsável por percorrer a AST e executar as instruções representadas nela.
+
+Durante a execução, o interpretador realiza operações como:
+
+\begin{itemize}
+    \item criação e atualização de variáveis;
+    \item avaliação de expressões matemáticas;
+    \item verificação de condições;
+    \item execução de laços de repetição;
+    \item exibição de mensagens;
+    \item tratamento de erros.
+\end{itemize}
+
+O interpretador também utiliza uma tabela de símbolos, que funciona como uma área de armazenamento para as variáveis criadas durante a execução do programa. Assim, quando uma variável é declarada, seu nome e valor ficam guardados para uso posterior.
+
+\section{Tratamento de Erros}
+
+O tratamento de erros é uma parte importante do projeto, pois ajuda o usuário a identificar problemas no código.
+
+Entre os erros que podem ser tratados estão:
+
+\begin{itemize}
+    \item erros de sintaxe;
+    \item uso de variáveis não declaradas;
+    \item divisão por zero;
+    \item operações inválidas entre tipos diferentes;
+    \item comandos escritos de forma incorreta.
+\end{itemize}
+
+Essas verificações tornam o sistema mais seguro e facilitam o aprendizado, pois o usuário consegue entender melhor onde está o problema no código desenvolvido.
+
+\section{Testes Realizados}
+
+Para verificar o funcionamento da linguagem, foram utilizados arquivos de teste presentes no projeto. Esses testes avaliam diferentes partes do sistema, garantindo que os módulos trabalhem de forma integrada.
+
+Entre os principais cenários avaliados estão:
+
+\begin{itemize}
+    \item declaração de variáveis;
+    \item operações matemáticas;
+    \item estruturas condicionais;
+    \item estruturas de repetição;
+    \item validação de tipos;
+    \item divisão por zero.
+\end{itemize}
+
+Os testes demonstram que o sistema consegue processar diferentes comandos da linguagem e identificar erros durante a execução. Isso mostra que as etapas de análise léxica, análise sintática e interpretação estão funcionando em conjunto.
+
+\section{Conclusão}
+
+O desenvolvimento do LudiCode permitiu aplicar na prática conceitos estudados na disciplina de Compiladores. O projeto mostra como uma linguagem de programação pode ser criada a partir da definição de tokens, regras gramaticais e mecanismos de execução.
+
+Durante o trabalho, foram implementadas etapas fundamentais, como análise léxica, análise sintática, construção da AST e interpretação dos comandos. Cada uma dessas etapas possui uma função específica dentro do funcionamento do sistema.
+
+Além do aspecto técnico, o projeto também possui uma proposta educacional, pois utiliza comandos em português para facilitar o aprendizado de programação. Dessa forma, o LudiCode demonstra como conceitos de compiladores podem ser aplicados em uma ferramenta voltada ao ensino de lógica computacional e robótica.
+
+\end{document}
