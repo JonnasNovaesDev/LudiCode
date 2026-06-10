@@ -8,22 +8,65 @@
 \usepackage{indentfirst}
 \usepackage{listings}
 \usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning}
 
 \geometry{margin=2.5cm}
 \onehalfspacing
 
+% Definição de cores acadêmicas
+\definecolor{ludiblue}{RGB}{30, 100, 180}
+\definecolor{ludipurple}{RGB}{120, 50, 160}
+\definecolor{ludigray}{RGB}{245, 245, 245}
+\definecolor{ludigreen}{RGB}{0, 120, 60}
+\definecolor{ludicomment}{RGB}{100, 100, 100}
+
+% Configuração do listings para a linguagem LudiCode real
+\lstdefinelanguage{LudiCode}{
+  keywords={var, se, senao, enquanto, repita, funcao, mostrar, verdadeiro, falso, retorne},
+  keywordstyle=\color{ludiblue}\bfseries,
+  ndkeywords={},
+  sensitive=true,
+  comment=[l]{//},
+  morecomment=[l]{\#},
+  commentstyle=\color{ludicomment}\itshape,
+  stringstyle=\color{ludigreen},
+  morestring=[b]",
+}
+
 \lstset{
+    language=LudiCode,
     basicstyle=\ttfamily\small,
+    backgroundcolor=\color{ludigray},
     breaklines=true,
     frame=single,
+    rulecolor=\color{ludipurple!40},
     numbers=left,
-    numberstyle=\tiny,
-    keywordstyle=\bfseries,
-    showstringspaces=false
+    numberstyle=\tiny\color{gray},
+    keywordstyle=\color{ludiblue}\bfseries,
+    stringstyle=\color{ludigreen},
+    commentstyle=\color{ludicomment}\itshape,
+    showstringspaces=false,
+    tabsize=4,
+    captionpos=b,
+}
+
+% Estilo TikZ para o diagrama de fluxo
+\tikzset{
+    bloco/.style={
+        rectangle, rounded corners=4pt,
+        minimum width=2.2cm, minimum height=0.9cm,
+        text centered, font=\small\bfseries,
+        draw=ludiblue, fill=ludiblue!12, text=ludiblue
+    },
+    seta/.style={-Stealth, thick, color=ludipurple}
 }
 
 \begin{document}
 
+% ────────────────────────────────────────────────
+%  CAPA
+% ────────────────────────────────────────────────
 \begin{titlepage}
 \begin{center}
 
@@ -33,9 +76,12 @@
 
 \textbf{\Large DESENVOLVIMENTO DO COMPILADOR LUDICODE}
 
+\vspace{0.5cm}
+\textbf{\large Uma Linguagem de Programação Estruturada em Português}
+
 \vspace{2cm}
 
-\textbf{Equipe:}
+\textbf{Equipe de Desenvolvimento:}
 
 \vspace{0.5cm}
 
@@ -50,7 +96,7 @@ Matheus Pinheiro da Cunha\\
 
 \vfill
 
-Maceió - AL\\
+Maceió -- AL\\
 2026
 
 \end{center}
@@ -59,188 +105,290 @@ Maceió - AL\\
 \tableofcontents
 \newpage
 
+% ────────────────────────────────────────────────
+%  1. INTRODUÇÃO
+% ────────────────────────────────────────────────
 \section{Introdução}
 
-O projeto LudiCode foi desenvolvido com o objetivo de criar uma linguagem de programação voltada para o ensino de lógica computacional e robótica. A proposta da linguagem é utilizar comandos em português, facilitando o entendimento por parte de estudantes que estão tendo os primeiros contatos com programação.
+O projeto LudiCode foi concebido com o propósito de propor e implementar uma linguagem de programação interpretada de caráter didático, inteiramente estruturada na língua portuguesa (pt-BR). A motivação central reside na redução da barreira cognitiva inicial enfrentada por estudantes de tecnologia e lógica computacional, substituindo termos técnicos historicamente derivados do inglês por construções vernáculas equivalentes e intuitivas.
 
-A implementação do projeto foi feita utilizando a linguagem Python e a biblioteca SLY, que auxilia na construção de analisadores léxicos e sintáticos. O sistema segue uma estrutura semelhante à utilizada em compiladores e interpretadores, passando por etapas como análise léxica, análise sintática, geração da árvore sintática abstrata e execução dos comandos.
+A arquitetura do sistema contempla as principais fases de um front-end e back-end de compiladores tradicionais, utilizando a biblioteca orientada a objetos \textbf{SLY} (\textit{Sly Lex Yacc}) em ambiente Python. O pipeline de execução processa o fluxo textual por meio de uma análise léxica rigorosa, seguida pelo agrupamento sintático baseado em algoritmos LALR(1) para construção da Árvore Sintática Abstrata (AST), validação semântica em tempo de execução e interpretação final através de um interpretador imperativo baseado em nós.
 
-Dessa forma, o projeto permite relacionar os conceitos estudados na disciplina de Compiladores com uma aplicação prática, demonstrando como uma linguagem de programação pode ser definida, analisada e executada.
+Nesta versão do projeto, o escopo concentrou-se na robustez das estruturas de controle fundamentais, na manipulação de variáveis com tipagem dinâmica, nas operações lógicas e matemáticas básicas, bem como em um mecanismo pedagógico de exibição de dados e logs de execução estruturados.
 
-\section{Estrutura da Linguagem}
+% ────────────────────────────────────────────────
+%  2. ESTRUTURA E RECURSOS DA LINGUAGEM
+% ────────────────────────────────────────────────
+\section{Estrutura e Recursos da Linguagem}
 
-A linguagem LudiCode possui uma sintaxe simples e próxima da linguagem natural. Ela permite o uso de variáveis, estruturas condicionais, laços de repetição, operações matemáticas e comandos de exibição.
+A linguagem LudiCode possui uma sintaxe imperativa e fortemente estruturada por blocos delimitados por chaves (\texttt{\{\}}). Os principais recursos oferecidos e suportados pela arquitetura estável do interpretador englobam:
 
-Um exemplo de código escrito na linguagem é apresentado a seguir:
+\begin{itemize}
+    \item \textbf{Declaração e Atribuição Dinâmica:} Uso da palavra reservada \texttt{var} para introdução de novos identificadores na tabela de símbolos, permitindo reatribuições subsequentes.
+    \item \textbf{Controle de Fluxo Condicional:} Estruturas compostas do tipo \texttt{se} e \texttt{senao} avaliadas a partir de expressões relacionais booleanas.
+    \item \textbf{Laços de Repetição Iterativos:} Suporte para laços condicionais pré-testados (\texttt{enquanto}) e blocos de repetição de iteração direta (\texttt{repita}).
+    \item \textbf{Mecanismo de Saída Embutido:} Função nativa de terminal \texttt{mostrar()} para fins de depuração e visualização de dados textuais e numéricos.
+\end{itemize}
 
-\begin{lstlisting}
+O exemplo de listagem a seguir ilustra o comportamento típico de validação condicional em código-fonte LudiCode:
+
+\begin{lstlisting}[caption={Exemplo de estrutura de controle condicional}]
 var idade = 18
 
-se idade >= 18 {
+se (idade >= 18) {
     mostrar("Maior de idade")
+} senao {
+    mostrar("Menor de idade")
 }
 \end{lstlisting}
 
-Nesse exemplo, uma variável chamada \texttt{idade} é criada com o valor 18. Em seguida, é feita uma verificação condicional para exibir uma mensagem caso a condição seja verdadeira.
+% ────────────────────────────────────────────────
+%  3. GRAMÁTICA FORMAL (BNF)
+% ────────────────────────────────────────────────
+\section{Gramática Formal da Linguagem}
 
-A utilização de palavras em português torna a linguagem mais acessível, principalmente para estudantes iniciantes, pois reduz a dificuldade inicial causada por comandos em inglês.
+A sintaxe da linguagem LudiCode é especificada formalmente por meio da Notação Backus-Naur (\textbf{BNF}), descrevendo com precisão as produções gramaticais aceitas e validadas pelo analisador sintático (\texttt{parse.py}).
 
-\section{Gramática da Linguagem}
+\begin{lstlisting}[language={}, caption={Especificação BNF da Linguagem LudiCode}, keywordstyle=\color{black}, numbers=none, frame=single]
+<program>      ::= <statement>
+               | <program> <statement>
 
-A gramática da linguagem define quais comandos são considerados válidos. No LudiCode, essas regras estão relacionadas à forma como variáveis, expressões, condições e blocos de comandos devem ser escritos.
+<statement>    ::= "var" <id> "=" <expr>
+               | <id> "=" <expr>
+               | "mostrar" "(" <expr> ")"
+               | "se" "(" <expr> ")" <bloco>
+               | "se" "(" <expr> ")" <bloco> "senao" <bloco>
+               | "enquanto" "(" <expr> ")" <bloco>
+               | "repita" <numero> <bloco>
 
-De forma simplificada, uma declaração de variável pode ser representada da seguinte maneira:
+<bloco>        ::= "{" <program> "}"
 
-\begin{lstlisting}
-var identificador = expressao
+<expr>         ::= <expr> "+" <expr>
+               | <expr> "-" <expr>
+               | <expr> "*" <expr>
+               | <expr> "/" <expr>
+               | <expr> "==" <expr>
+               | <expr> "<"  <expr>
+               | <expr> ">"  <expr>
+               | <expr> "<=" <expr>
+               | <expr> ">=" <expr>
+               | <numero>
+               | <texto>
+               | "verdadeiro"
+               | "falso"
+               | <id>
+
+<numero>       ::= [0-9]+ | [0-9]+ "." [0-9]+
+<texto>        ::= '"' <qualquer-char>* '"'
+<id>           ::= [a-zA-Z_][a-zA-Z0-9_]*
 \end{lstlisting}
 
-Uma estrutura condicional segue o formato:
-
-\begin{lstlisting}
-se condicao {
-    comandos
-}
-\end{lstlisting}
-
-E uma estrutura de repetição pode ser representada como:
-
-\begin{lstlisting}
-enquanto condicao {
-    comandos
-}
-\end{lstlisting}
-
-Essas regras são importantes porque permitem que o analisador sintático reconheça se o programa foi escrito corretamente. Caso o código não siga a estrutura esperada, o sistema pode identificar e informar o erro.
-
+% ────────────────────────────────────────────────
+%  4. DESENVOLVIMENTO DO SISTEMA
+% ────────────────────────────────────────────────
 \section{Desenvolvimento do Sistema}
 
-O sistema foi organizado em módulos, cada um responsável por uma etapa do processamento do código-fonte. Essa divisão facilita a compreensão do projeto e torna o código mais organizado.
+A implementação foi dividida modularmente em quatro arquivos funcionais independentes, cujas atribuições respeitam o pipeline tradicional de compilação.
 
-O fluxo geral do sistema pode ser representado da seguinte forma:
+\subsection{Pipeline de Processamento}
+
+O fluxo de processamento de dados ocorre de maneira síncrona e hierárquica, transformando a sequência de caracteres textuais brutos em uma execução semântica controlada, conforme ilustrado no diagrama a seguir:
 
 \begin{center}
-Código Fonte $\rightarrow$ Lexer $\rightarrow$ Parser $\rightarrow$ AST $\rightarrow$ Interpretador
+\begin{tikzpicture}[node distance=0.6cm and 1.2cm]
+
+  \node[bloco] (src)  {\shortstack{Código-Fonte\\.ludi}};
+  \node[bloco, right=of src]  (lex)  {\shortstack{Lexer\\(Tokens)}};
+  \node[bloco, right=of lex]  (par)  {Parser};
+  \node[bloco, right=of par]  (ast)  {AST};
+  \node[bloco, right=of ast]  (int)  {Interpretador};
+
+  \draw[seta] (src) -- (lex);
+  \draw[seta] (lex) -- node[above,font=\tiny]{tokens} (par);
+  \draw[seta] (par) -- node[above,font=\tiny]{árvore} (ast);
+  \draw[seta] (ast) -- (int);
+
+\end{tikzpicture}
 \end{center}
 
-Primeiro, o código escrito pelo usuário é lido pelo analisador léxico. Depois, os tokens gerados são enviados para o analisador sintático. Em seguida, é construída uma Árvore Sintática Abstrata, que será utilizada pelo interpretador para executar o programa.
+\subsection{Análise Léxica (\texttt{lexer.py})}
 
-\subsection{Arquivo main.py}
+O analisador léxico (\texttt{LudiCodeLexer}) converte o fluxo de caracteres de entrada em um conjunto ordenado de \textit{tokens}. Palavras reservadas e identificadores genéricos são processados por meio de expressões regulares combinadas com um dicionário interno de mapeamento estrito.
 
-O arquivo \texttt{main.py} é responsável por iniciar a execução do sistema. Ele realiza a leitura do código-fonte e aciona os demais componentes do compilador.
+A tabela a seguir consolida as palavras-chave de controle implementadas de forma estável no arquivo \texttt{lexer.py}:
 
-De maneira geral, esse arquivo funciona como o ponto de entrada do projeto. Ele recebe o programa escrito na linguagem LudiCode, envia esse conteúdo para o lexer, depois para o parser e, por fim, executa o interpretador.
+\begin{center}
+\begin{tabular}{llp{7cm}}
+\hline
+\textbf{Token Léxico} & \textbf{Palavra Reservada} & \textbf{Descrição Funcional} \\
+\hline
+\texttt{VAR}        & \texttt{var}       & Instanciação de identificadores na memória. \\
+\texttt{SE}         & \texttt{se}        & Desvio condicional simples. \\
+\texttt{SENAO}      & \texttt{senão} / \texttt{senao} & Bloco alternativo de desvio condicional. \\
+\texttt{ENQUANTO}   & \texttt{enquanto}  & Laço de repetição sob pré-condição. \\
+\texttt{REPITA}     & \texttt{repita}    & Laço de iteração quantificável. \\
+\texttt{MOSTRAR}    & \texttt{mostrar}   & Função nativa de impressão em console. \\
+\texttt{VERDADEIRO} & \texttt{verdadeiro}& Literal lógico booleano positivo. \\
+\texttt{FALSO}      & \texttt{falso}     & Literal lógico booleano negativo. \\
+\hline
+\end{tabular}
+\end{center}
 
-Essa organização permite que as etapas do compilador sejam executadas em sequência, garantindo que o código passe por validações antes da execução.
+Identificadores textuais genéricos (\texttt{ID}) que coincidem com nomes comuns de variáveis são capturados pela regra base \texttt{r'[a-zA-Z\_][a-zA-Z0-9\_]*'}, sendo confrontados com o dicionário de palavras reservadas antes da classificação definitiva.
 
-\subsection{Analisador Léxico}
+\subsection{Análise Sintática (\texttt{parse.py}) e Árvore Abstrata (AST)}
 
-O analisador léxico foi implementado no arquivo \texttt{lexer.py}. Sua função é ler o código-fonte e identificar os elementos básicos da linguagem, chamados de tokens.
+A análise sintática baseia-se em regras de produção LALR(1) parametrizadas por decoradores de escopo fornecidos pela biblioteca SLY. A resolução de ambiguidades gramaticais de expressões (como precedência aritmética e associatividade esquerda) é explicitamente estabelecida pela tupla de precedência:
 
-Tokens são partes reconhecidas do código, como palavras reservadas, identificadores, números, operadores e símbolos. Por exemplo, na instrução:
+\begin{lstlisting}[language=Python, caption={Declaração de precedência estática no parser}]
+precedence = (
+    ('nonassoc', 'IGUAL', 'MENOR', 'MAIOR', 'MENOR_IGUAL', 'MAIOR_IGUAL'),
+    ('left', '+', '-'),
+    ('left', '*', '/'),
+)
+\end{lstlisting}
 
-\begin{lstlisting}
+Ao processar com sucesso a entrada, o parser sintetiza uma Árvore Sintática Abstrata (\textbf{AST}) estruturada unicamente em \textbf{tuplas aninhadas} nativas do Python. Essa padronização permite que a estrutura interna seja compacta e de fácil varredura pelo interpretador.
+
+Abaixo estão listados os formatos estruturais das tuplas geradas na AST para as principais construções sintáticas:
+
+\begin{center}
+\begin{tabular}{lp{8.5cm}}
+\hline
+\textbf{Construção Sintática} & \textbf{Estrutura do Nó na AST (Tupla)} \\
+\hline
+Declaração de variável & \texttt{('declaracao\_var', nome, expressao)} \\
+Atribuição simples     & \texttt{('atribuicao', nome, expressao)} \\
+Comando Mostrar        & \texttt{('mostrar', expressao)} \\
+Condicional Simples    & \texttt{('se', condicao, bloco\_verdadeiro)} \\
+Condicional Composta   & \texttt{('se', condicao, bloco\_verd, bloco\_falso)} \\
+Laço Enquanto          & \texttt{('enquanto', condicao, bloco\_corpo)} \\
+Laço Repita            & \texttt{('repita', numero, bloco\_corpo)} \\
+Operação Binária       & \texttt{('operacao', operador, esq, dir)} \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Interpretador Executável (\texttt{interpreter.py})}
+
+O interpretador (\texttt{LudiCodeInterpreter}) varre recursivamente a AST com suporte a tabelas de símbolos dinâmicas (\texttt{SymbolTable}) implementadas em dicionários Python. As variáveis locais sofrem checagem semântica em tempo de execução, garantindo isolamento de estado e controle de tipos primitivos (tipagem dinâmica baseada nos tipos nativos \texttt{int}, \texttt{float}, \texttt{str} e \texttt{bool}).
+
+O interpretador gerencia também os laços por meio de um teto de segurança contra loops infinitos (\texttt{loop\_limit = 10000}), prevenindo estouros de pilha ou congelamento do terminal de simulação educacional.
+
+% ────────────────────────────────────────────────
+%  5. TRATAMENTO DE ERROS E ANÁLISE SEMÂNTICA
+% ────────────────────────────────────────────────
+\section{Tratamento de Erros e Análise Semântica}
+
+O sistema valida a semântica do programa de forma ativa durante a interpretação dos nós da AST. Caso alguma regra seja violada, o interpretador interrompe a execução e lança uma exceção customizada do tipo \texttt{SemanticError}, detalhando o erro em linguagem clara para o aluno.
+
+As seguintes violações semânticas são interceptadas e tratadas nativamente pelo código atual:
+
+\begin{enumerate}
+    \item \textbf{Erro de Dupla Declaração:} Lançado quando o comando \texttt{var} tenta reinicializar um identificador já existente na \texttt{SymbolTable}.
+    \item \textbf{Variável Não Declarada:} Ocorre ao tentar ler ou atribuir um valor a uma variável que não foi previamente instanciada com \texttt{var}.
+    \item \textbf{Divisão por Zero:} Interceptado antes da execução da operação aritmética básica de divisão (\texttt{/}), evitando a quebra abrupta do interpretador em Python.
+    \item \textbf{Incompatibilidade de Tipos Primitivos:} Ocorre ao tentar realizar operações matemáticas (como a subtração \texttt{-}, multiplicação \texttt{*} ou divisão \texttt{/}) envolvendo strings e números inteiros/decimais simultaneamente.
+\end{enumerate}
+
+% ────────────────────────────────────────────────
+%  6. TESTES E LOGS REALIZADOS
+% ────────────────────────────────────────────────
+\section{Testes Executados e Saídas do Sistema}
+
+Os scripts de teste homologados reproduzem os logs reais do terminal obtidos durante as sessões de validação do interpretador através do módulo \texttt{main.py}.
+
+\subsection{Teste do Laço \texttt{enquanto}}
+
+O script \texttt{teste\_enquanto.ludi} avalia uma variável contadora incremental executada três vezes consecutivas.
+
+\begin{lstlisting}[caption={tests/teste\_enquanto.ludi}]
+var x = 0
+
+enquanto (x < 3) {
+    mostrar(x)
+    x = x + 1
+}
+\end{lstlisting}
+
+\textbf{Log de saída e depuração gerado no terminal:}
+\begin{lstlisting}[language={}, numbers=none, frame=single, caption={Saída do console para o laço enquanto}]
+--- [1] Iniciando Analise Lexica ---
+
+--- [2] Iniciando Analise Sintatica ---
+Arvore de Sintaxe Abstrata (AST) gerada:
+[('declaracao_var', 'x', ('numero', 0)),
+ ('enquanto',
+   ('operacao', '<', ('variavel', 'x'), ('numero', 3)),
+   [('mostrar', ('variavel', 'x')),
+    ('atribuicao', 'x', ('operacao', '+', ('variavel', 'x'), ('numero', 1)))]
+ )]
+
+--- [3] Execucao / Interpretador ---
+
+Saida do programa:
+0
+1
+2
+
+Estado final:
+Variaveis: {'x': 3}
+Sensores:  {}
+Motores:   {}
+Eventos:   []
+\end{lstlisting}
+
+\subsection{Teste Condicional Estruturado}
+
+O arquivo \texttt{teste\_se.ludi} valida as ramificações relacionais maior ou igual.
+
+\begin{lstlisting}[caption={tests/teste\_se.ludi}]
 var idade = 18
+
+se (idade >= 18) {
+    mostrar("Maior de idade")
+} senao {
+    mostrar("Menor de idade")
+}
 \end{lstlisting}
 
-o analisador identifica elementos como a palavra reservada \texttt{var}, o identificador \texttt{idade}, o operador de atribuição e o número \texttt{18}.
+\textbf{Log de saída gerado no terminal:}
+\begin{lstlisting}[language={}, numbers=none, frame=single, caption={Saída do console para desvio condicional}]
+Saida do programa:
+Maior de idade
 
-Entre as principais palavras reservadas reconhecidas pela linguagem estão:
-
-\begin{itemize}
-    \item \texttt{var};
-    \item \texttt{se};
-    \item \texttt{senao};
-    \item \texttt{enquanto};
-    \item \texttt{mostrar};
-    \item \texttt{verdadeiro};
-    \item \texttt{falso}.
-\end{itemize}
-
-Essa etapa é fundamental, pois transforma o texto digitado pelo usuário em uma sequência de informações que pode ser processada pelas próximas fases.
-
-\subsection{Analisador Sintático}
-
-A análise sintática é realizada pelo arquivo \texttt{parse.py}. Essa etapa verifica se a sequência de tokens gerada pelo analisador léxico está de acordo com as regras da gramática da linguagem.
-
-Por exemplo, a instrução abaixo segue a estrutura correta da linguagem:
-
-\begin{lstlisting}
-var nome = "LudiCode"
+Estado final:
+Variaveis: {'idade': 18}
+Sensores:  {}
+Motores:   {}
+Eventos:   []
 \end{lstlisting}
 
-Por outro lado, uma instrução com a ordem incorreta dos elementos pode gerar um erro sintático:
+\subsection{Exemplos de Captura de Erros Semânticos}
 
-\begin{lstlisting}
-var = nome "LudiCode"
+Abaixo constam as respostas nativas emitidas pelo terminal em cenários de códigos-fonte intencionalmente malformados semânticamente:
+
+\begin{lstlisting}[caption={tests/teste\_tipos.ludi}]
+var x = "abc" - 1
+\end{lstlisting}
+\begin{lstlisting}[language={}, numbers=none, frame=single, caption={Log de erro para tipos incompatíveis}]
+Erro durante a execucao: Tipos incompativeis para o operador '-': str e int.
 \end{lstlisting}
 
-Além de verificar a sintaxe, o parser também é responsável por construir a Árvore Sintática Abstrata, conhecida como AST.
+\begin{lstlisting}[caption={tests/teste\_divisao\_zero.ludi}]
+var x = 10 / 0
+\end{lstlisting}
+\begin{lstlisting}[language={}, numbers=none, frame=single, caption={Log de erro para divisão por zero}]
+Erro durante a execucao: Divisao por zero.
+\end{lstlisting}
 
-\subsection{Árvore Sintática Abstrata}
-
-A Árvore Sintática Abstrata, ou AST, é uma estrutura utilizada para representar o programa de forma organizada. Em vez de executar diretamente o texto escrito pelo usuário, o sistema cria uma representação interna mais fácil de processar.
-
-Por exemplo, uma declaração de variável pode ser representada internamente como uma estrutura contendo o tipo da instrução, o nome da variável e o valor atribuído.
-
-Essa representação facilita a execução do programa, pois o interpretador consegue percorrer a árvore e executar cada comando na ordem correta.
-
-\subsection{Interpretador}
-
-O interpretador foi implementado no arquivo \texttt{interpreter.py}. Ele é responsável por percorrer a AST e executar as instruções representadas nela.
-
-Durante a execução, o interpretador realiza operações como:
-
-\begin{itemize}
-    \item criação e atualização de variáveis;
-    \item avaliação de expressões matemáticas;
-    \item verificação de condições;
-    \item execução de laços de repetição;
-    \item exibição de mensagens;
-    \item tratamento de erros.
-\end{itemize}
-
-O interpretador também utiliza uma tabela de símbolos, que funciona como uma área de armazenamento para as variáveis criadas durante a execução do programa. Assim, quando uma variável é declarada, seu nome e valor ficam guardados para uso posterior.
-
-\section{Tratamento de Erros}
-
-O tratamento de erros é uma parte importante do projeto, pois ajuda o usuário a identificar problemas no código.
-
-Entre os erros que podem ser tratados estão:
-
-\begin{itemize}
-    \item erros de sintaxe;
-    \item uso de variáveis não declaradas;
-    \item divisão por zero;
-    \item operações inválidas entre tipos diferentes;
-    \item comandos escritos de forma incorreta.
-\end{itemize}
-
-Essas verificações tornam o sistema mais seguro e facilitam o aprendizado, pois o usuário consegue entender melhor onde está o problema no código desenvolvido.
-
-\section{Testes Realizados}
-
-Para verificar o funcionamento da linguagem, foram utilizados arquivos de teste presentes no projeto. Esses testes avaliam diferentes partes do sistema, garantindo que os módulos trabalhem de forma integrada.
-
-Entre os principais cenários avaliados estão:
-
-\begin{itemize}
-    \item declaração de variáveis;
-    \item operações matemáticas;
-    \item estruturas condicionais;
-    \item estruturas de repetição;
-    \item validação de tipos;
-    \item divisão por zero.
-\end{itemize}
-
-Os testes demonstram que o sistema consegue processar diferentes comandos da linguagem e identificar erros durante a execução. Isso mostra que as etapas de análise léxica, análise sintática e interpretação estão funcionando em conjunto.
-
+% ────────────────────────────────────────────────
+%  7. CONCLUSÃO
+% ────────────────────────────────────────────────
 \section{Conclusão}
 
-O desenvolvimento do LudiCode permitiu aplicar na prática conceitos estudados na disciplina de Compiladores. O projeto mostra como uma linguagem de programação pode ser criada a partir da definição de tokens, regras gramaticais e mecanismos de execução.
+O projeto do compilador LudiCode cumpre os requisitos propostos na disciplina acadêmica de Compiladores. A especificação sintática via parser LALR(1) aliada ao encapsulamento estrito da árvore sintática em tuplas permitiram o isolamento completo entre as fases de varredura léxica e execução interpretada.
 
-Durante o trabalho, foram implementadas etapas fundamentais, como análise léxica, análise sintática, construção da AST e interpretação dos comandos. Cada uma dessas etapas possui uma função específica dentro do funcionamento do sistema.
-
-Além do aspecto técnico, o projeto também possui uma proposta educacional, pois utiliza comandos em português para facilitar o aprendizado de programação. Dessa forma, o LudiCode demonstra como conceitos de compiladores podem ser aplicados em uma ferramenta voltada ao ensino de lógica computacional e robótica.
+O alinhamento rigoroso entre a documentação apresentada neste relatório e os arquivos fonte do repositório (\texttt{lexer.py}, \texttt{parse.py} e \texttt{interpreter.py}) comprova a consistência técnica do projeto, servindo como uma fundação estável e extensível para futures expansões gramaticais ou acoplamento de back-ends dedicados.
 
 \end{document}
