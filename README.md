@@ -23,23 +23,27 @@
 
 ## Como executar o Projeto
 
-```git clone https://github.com/seu-usuario/LudiCode.git```
-```cd LudiCode```
-```pip install -r requirements.txt```
-```python main.py```
+```bash
+git clone https://github.com/seu-usuario/LudiCode.git
+cd LudiCode
+pip install -r requirements.txt
+python main.py
+```
 
 ou executar um arquivo .ludi:
-```python main.py ./tests/teste_enquanto.ludi```
+```bash
+python main.py ./tests/teste_enquanto.ludi
+```
 
 ## Exemplo de código
-```
+```text
 var idade = 18
 
-se idade >= 18 então
+se (idade >= 18) {
     mostrar("Maior de idade")
-senão
+} senao {
     mostrar("Menor de idade")
-fim
+}
 
 ### Saída Esperada
 Maior de idade
