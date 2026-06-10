@@ -110,11 +110,7 @@ Maceió -- AL\\
 % ────────────────────────────────────────────────
 \section{Introdução}
 
-O projeto LudiCode foi concebido com o propósito de propor e implementar uma linguagem de programação interpretada de caráter didático, inteiramente estruturada na língua portuguesa (pt-BR). A motivação central reside na redução da barreira cognitiva inicial enfrentada por estudantes de tecnologia e lógica computacional, substituindo termos técnicos historicamente derivados do inglês por construções vernáculas equivalentes e intuitivas.
-
-A arquitetura do sistema contempla as principais fases de um front-end e back-end de compiladores tradicionais, utilizando a biblioteca orientada a objetos \textbf{SLY} (\textit{Sly Lex Yacc}) em ambiente Python. O pipeline de execução processa o fluxo textual por meio de uma análise léxica rigorosa, seguida pelo agrupamento sintático baseado em algoritmos LALR(1) para construção da Árvore Sintática Abstrata (AST), validação semântica em tempo de execução e interpretação final através de um interpretador imperativo baseado em nós.
-
-Nesta versão do projeto, o escopo concentrou-se na robustez das estruturas de controle fundamentais, na manipulação de variáveis com tipagem dinâmica, nas operações lógicas e matemáticas básicas, bem como em um mecanismo pedagógico de exibição de dados e logs de execução estruturados.
+Para que o computador compreenda as instruções, o projeto utiliza uma arquitetura clássica de compiladores, desenvolvida em Python com o auxílio da biblioteca SLY. O processo funciona como uma linha de montagem: primeiro, o sistema lê o texto e o organiza em pedaços lógicos (análise léxica); em seguida, ele verifica se a estrutura dessas frases obedece às regras da linguagem para montar um mapa de execução, chamado de Árvore Sintática Abstrata (análise sintática); por fim, ele valida se o comando faz sentido matematicamente e logicamente (validação semântica) antes de efetivamente executá-lo (interpretador).
 
 % ────────────────────────────────────────────────
 %  2. ESTRUTURA E RECURSOS DA LINGUAGEM
@@ -387,8 +383,7 @@ Erro durante a execucao: Divisao por zero.
 % ────────────────────────────────────────────────
 \section{Conclusão}
 
-O projeto do compilador LudiCode cumpre os requisitos propostos na disciplina acadêmica de Compiladores. A especificação sintática via parser LALR(1) aliada ao encapsulamento estrito da árvore sintática em tuplas permitiram o isolamento completo entre as fases de varredura léxica e execução interpretada.
-
-O alinhamento rigoroso entre a documentação apresentada neste relatório e os arquivos fonte do repositório (\texttt{lexer.py}, \texttt{parse.py} e \texttt{interpreter.py}) comprova a consistência técnica do projeto, servindo como uma fundação estável e extensível para futures expansões gramaticais ou acoplamento de back-ends dedicados.
+O desenvolvimento do LudiCode permitiu aplicar na prática conceitos estudados na disciplina de Compiladores. O projeto mostra como uma linguagem de programação pode ser criada a partir da definição de tokens, regras gramaticais e mecanismos de execução. Durante o trabalho, foram implementadas etapas fundamentais, como análise léxica, análise sintática, construção da AST e interpretação dos comandos. Cada uma dessas etapas possui uma função específica dentro do funcionamento do sistema.
+Além do aspecto técnico, o projeto também possui uma proposta educacional, pois utiliza comandos em português para facilitar o aprendizado de programação. Dessa forma, o LudiCode demonstra como conceitos de compiladores podem ser aplicados em uma ferramenta voltada ao ensino de lógica computacional e robótica.
 
 \end{document}
